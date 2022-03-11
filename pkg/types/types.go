@@ -357,14 +357,6 @@ func equals(a []string, b []string) bool {
 	return true
 }
 
-// InstallConfig AdguardHome install config
-type InstallConfig struct {
-	Web      InstallPort `json:"web"`
-	DNS      InstallPort `json:"dns"`
-	Username string      `json:"username"`
-	Password string      `json:"password"`
-}
-
 // InstallPort AdguardHome install config port
 type InstallPort struct {
 	IP         string `json:"ip"`

@@ -383,18 +383,14 @@ func (cl *client) SetStatsConfig(interval float64) error {
 
 func (cl *client) Setup() error {
 	cl.log.Info("Setup new AdguardHome instance")
-	cfg := &types.InstallConfig{
-		Web: types.InstallPort{
-			IP:         "0.0.0.0",
-			Port:       3000,
-			Status:     "",
-			CanAutofix: false,
+	cfg := &model.InitialConfiguration{
+		Web: model.AddressInfo{
+			Ip:   "0.0.0.0",
+			Port: 3000,
 		},
-		DNS: types.InstallPort{
-			IP:         "0.0.0.0",
-			Port:       53,
-			Status:     "",
-			CanAutofix: false,
+		Dns: model.AddressInfo{
+			Ip:   "0.0.0.0",
+			Port: 53,
 		},
 	}
 

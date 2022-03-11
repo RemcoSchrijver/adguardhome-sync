@@ -120,7 +120,7 @@ bar`)
 
 	Context("Setup", func() {
 		It("should add setup the instance", func() {
-			ts, cl = ClientPost("/install/configure", fmt.Sprintf(`{"web":{"ip":"0.0.0.0","port":3000,"status":"","can_autofix":false},"dns":{"ip":"0.0.0.0","port":53,"status":"","can_autofix":false},"username":"%s","password":"%s"}`, username, password))
+			ts, cl = ClientPost("/install/configure", fmt.Sprintf(`{"dns":{"ip":"0.0.0.0","port":53},"password":"%s","username":"%s","web":{"ip":"0.0.0.0","port":3000}}`, password, username))
 			err := cl.Setup()
 			Ω(err).ShouldNot(HaveOccurred())
 		})
