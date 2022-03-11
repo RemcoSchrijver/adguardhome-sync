@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/bakito/adguardhome-sync/pkg/client"
+	"github.com/bakito/adguardhome-sync/pkg/client/model"
 	"github.com/bakito/adguardhome-sync/pkg/log"
 	"github.com/bakito/adguardhome-sync/pkg/types"
 	"github.com/bakito/adguardhome-sync/version"
@@ -461,7 +462,7 @@ func (w *worker) syncDNS(oal *types.AccessList, odc *types.DNSConfig, rc client.
 	return nil
 }
 
-func (w *worker) syncDHCPServer(osc *types.DHCPServerConfig, rc client.Client) error {
+func (w *worker) syncDHCPServer(osc *model.DhcpStatus, rc client.Client) error {
 	sc, err := rc.DHCPServerConfig()
 	if w.cfg.Features.DHCP.ServerConfig {
 		if err != nil {
@@ -475,7 +476,7 @@ func (w *worker) syncDHCPServer(osc *types.DHCPServerConfig, rc client.Client) e
 	}
 
 	if w.cfg.Features.DHCP.StaticLeases {
-		a, r := sc.StaticLeases.Merge(osc.StaticLeases)
+		a, r := model.DhcpStaticLeaseMerge(sc.StaticLeases, osc.StaticLeases)
 
 		if err = rc.AddDHCPStaticLeases(a...); err != nil {
 			return err
@@ -497,7 +498,7 @@ type origin struct {
 	statsConfig      *types.IntervalConfig
 	accessList       *types.AccessList
 	dnsConfig        *types.DNSConfig
-	dhcpServerConfig *types.DHCPServerConfig
+	dhcpServerConfig *model.DhcpStatus
 	parental         bool
 	safeSearch       bool
 	safeBrowsing     bool

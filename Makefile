@@ -36,7 +36,7 @@ ifeq (, $(shell which mockgen))
 endif
 
 start-replica:
-	podman run --pull always --rm -it -p 9090:80 -p 9091:3000  adguard/adguardhome
+	podman run --pull always --rm -it -p 9090:80 -p 9091:3000 --name adgardhome-replica adguard/adguardhome
 
 check_defined = \
     $(strip $(foreach 1,$1, \
@@ -47,7 +47,7 @@ __check_defined = \
 
 build-image:
 	$(call check_defined, AGH_SYNC_VERSION)
-	podman build --build-arg VERSION=${AGH_SYNC_VERSION} --build-arg BUILD=$(shell date -u +'%Y-%m-%dT%H:%M:%S.%3NZ') --name adgardhome-replica -t ghcr.io/bakito/adguardhome-sync:${AGH_SYNC_VERSION} .
+	podman build --build-arg VERSION=${AGH_SYNC_VERSION} --build-arg BUILD=$(shell date -u +'%Y-%m-%dT%H:%M:%S.%3NZ') -t ghcr.io/bakito/adguardhome-sync:${AGH_SYNC_VERSION} .
 
 # go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.9.1
 model:

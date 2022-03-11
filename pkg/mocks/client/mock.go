@@ -7,6 +7,7 @@ package client
 import (
 	reflect "reflect"
 
+	model "github.com/bakito/adguardhome-sync/pkg/client/model"
 	types "github.com/bakito/adguardhome-sync/pkg/types"
 	gomock "github.com/golang/mock/gomock"
 )
@@ -68,7 +69,7 @@ func (mr *MockClientMockRecorder) AddClients(arg0 ...interface{}) *gomock.Call {
 }
 
 // AddDHCPStaticLeases mocks base method.
-func (m *MockClient) AddDHCPStaticLeases(arg0 ...types.Lease) error {
+func (m *MockClient) AddDHCPStaticLeases(arg0 ...model.DhcpStaticLease) error {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{}
 	for _, a := range arg0 {
@@ -138,10 +139,10 @@ func (mr *MockClientMockRecorder) Clients() *gomock.Call {
 }
 
 // DHCPServerConfig mocks base method.
-func (m *MockClient) DHCPServerConfig() (*types.DHCPServerConfig, error) {
+func (m *MockClient) DHCPServerConfig() (*model.DhcpStatus, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DHCPServerConfig")
-	ret0, _ := ret[0].(*types.DHCPServerConfig)
+	ret0, _ := ret[0].(*model.DhcpStatus)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -186,7 +187,7 @@ func (mr *MockClientMockRecorder) DeleteClients(arg0 ...interface{}) *gomock.Cal
 }
 
 // DeleteDHCPStaticLeases mocks base method.
-func (m *MockClient) DeleteDHCPStaticLeases(arg0 ...types.Lease) error {
+func (m *MockClient) DeleteDHCPStaticLeases(arg0 ...model.DhcpStaticLease) error {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{}
 	for _, a := range arg0 {
@@ -402,7 +403,7 @@ func (mr *MockClientMockRecorder) SetCustomRules(arg0 interface{}) *gomock.Call 
 }
 
 // SetDHCPServerConfig mocks base method.
-func (m *MockClient) SetDHCPServerConfig(arg0 *types.DHCPServerConfig) error {
+func (m *MockClient) SetDHCPServerConfig(arg0 *model.DhcpStatus) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SetDHCPServerConfig", arg0)
 	ret0, _ := ret[0].(error)

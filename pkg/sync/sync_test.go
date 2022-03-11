@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/bakito/adguardhome-sync/pkg/client"
+	"github.com/bakito/adguardhome-sync/pkg/client/model"
 	clientmock "github.com/bakito/adguardhome-sync/pkg/mocks/client"
 	"github.com/bakito/adguardhome-sync/pkg/types"
 	gm "github.com/golang/mock/gomock"
@@ -463,7 +464,7 @@ var _ = Describe("Sync", func() {
 				cl.EXPECT().StatsConfig().Return(&types.IntervalConfig{}, nil)
 				cl.EXPECT().AccessList().Return(&types.AccessList{}, nil)
 				cl.EXPECT().DNSConfig().Return(&types.DNSConfig{}, nil)
-				cl.EXPECT().DHCPServerConfig().Return(&types.DHCPServerConfig{}, nil)
+				cl.EXPECT().DHCPServerConfig().Return(&model.DhcpStatus{}, nil)
 
 				// replica
 				cl.EXPECT().Host()
@@ -490,7 +491,7 @@ var _ = Describe("Sync", func() {
 				cl.EXPECT().DeleteClients()
 				cl.EXPECT().AccessList().Return(&types.AccessList{}, nil)
 				cl.EXPECT().DNSConfig().Return(&types.DNSConfig{}, nil)
-				cl.EXPECT().DHCPServerConfig().Return(&types.DHCPServerConfig{}, nil)
+				cl.EXPECT().DHCPServerConfig().Return(&model.DhcpStatus{}, nil)
 				cl.EXPECT().AddDHCPStaticLeases().Return(nil)
 				cl.EXPECT().DeleteDHCPStaticLeases().Return(nil)
 				w.sync()
@@ -516,7 +517,7 @@ var _ = Describe("Sync", func() {
 				cl.EXPECT().StatsConfig().Return(&types.IntervalConfig{}, nil)
 				cl.EXPECT().AccessList().Return(&types.AccessList{}, nil)
 				cl.EXPECT().DNSConfig().Return(&types.DNSConfig{}, nil)
-				cl.EXPECT().DHCPServerConfig().Return(&types.DHCPServerConfig{}, nil)
+				cl.EXPECT().DHCPServerConfig().Return(&model.DhcpStatus{}, nil)
 
 				// replica
 				cl.EXPECT().Host()
