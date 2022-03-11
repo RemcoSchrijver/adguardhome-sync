@@ -250,15 +250,15 @@ var _ = Describe("Sync", func() {
 		Context("syncConfigs", func() {
 			var (
 				o   *origin
-				qlc *types.QueryLogConfig
+				qlc *model.QueryLogConfig
 				sc  *model.StatsConfig
 			)
 			BeforeEach(func() {
 				o = &origin{
-					queryLogConfig: &types.QueryLogConfig{},
+					queryLogConfig: &model.QueryLogConfig{},
 					statsConfig:    &model.StatsConfig{},
 				}
-				qlc = &types.QueryLogConfig{}
+				qlc = &model.QueryLogConfig{}
 				sc = &model.StatsConfig{}
 			})
 			It("should have no changes", func() {
@@ -268,9 +268,10 @@ var _ = Describe("Sync", func() {
 				Ω(err).ShouldNot(HaveOccurred())
 			})
 			It("should have QueryLogConfig changes", func() {
-				o.queryLogConfig.Interval = 123
+				i := model.QueryLogConfigInterval(123)
+				o.queryLogConfig.Interval = &i
 				cl.EXPECT().QueryLogConfig().Return(qlc, nil)
-				cl.EXPECT().SetQueryLogConfig(false, 123.0, false)
+				cl.EXPECT().SetQueryLogConfig(false, model.QueryLogConfigInterval(123.0), false)
 				cl.EXPECT().StatsConfig().Return(sc, nil)
 				err := w.syncConfigs(o, cl)
 				Ω(err).ShouldNot(HaveOccurred())
@@ -461,7 +462,7 @@ var _ = Describe("Sync", func() {
 				cl.EXPECT().Services()
 				cl.EXPECT().Filtering().Return(&types.FilteringStatus{}, nil)
 				cl.EXPECT().Clients().Return(&types.Clients{}, nil)
-				cl.EXPECT().QueryLogConfig().Return(&types.QueryLogConfig{}, nil)
+				cl.EXPECT().QueryLogConfig().Return(&model.QueryLogConfig{}, nil)
 				cl.EXPECT().StatsConfig().Return(&model.StatsConfig{}, nil)
 				cl.EXPECT().AccessList().Return(&model.AccessList{}, nil)
 				cl.EXPECT().DNSConfig().Return(&model.DNSConfig{}, nil)
@@ -473,7 +474,7 @@ var _ = Describe("Sync", func() {
 				cl.EXPECT().Parental()
 				cl.EXPECT().SafeSearch()
 				cl.EXPECT().SafeBrowsing()
-				cl.EXPECT().QueryLogConfig().Return(&types.QueryLogConfig{}, nil)
+				cl.EXPECT().QueryLogConfig().Return(&model.QueryLogConfig{}, nil)
 				cl.EXPECT().StatsConfig().Return(&model.StatsConfig{}, nil)
 				cl.EXPECT().RewriteList().Return(&types.RewriteEntries{}, nil)
 				cl.EXPECT().AddRewriteEntries()
@@ -514,7 +515,7 @@ var _ = Describe("Sync", func() {
 				cl.EXPECT().Services()
 				cl.EXPECT().Filtering().Return(&types.FilteringStatus{}, nil)
 				cl.EXPECT().Clients().Return(&types.Clients{}, nil)
-				cl.EXPECT().QueryLogConfig().Return(&types.QueryLogConfig{}, nil)
+				cl.EXPECT().QueryLogConfig().Return(&model.QueryLogConfig{}, nil)
 				cl.EXPECT().StatsConfig().Return(&model.StatsConfig{}, nil)
 				cl.EXPECT().AccessList().Return(&model.AccessList{}, nil)
 				cl.EXPECT().DNSConfig().Return(&model.DNSConfig{}, nil)

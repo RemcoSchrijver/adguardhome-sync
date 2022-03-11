@@ -94,8 +94,8 @@ type Client interface {
 	AddClients(client ...types.Client) error
 	UpdateClients(client ...types.Client) error
 	DeleteClients(client ...types.Client) error
-	QueryLogConfig() (*types.QueryLogConfig, error)
-	SetQueryLogConfig(enabled bool, interval float64, anonymizeClientIP bool) error
+	QueryLogConfig() (*model.QueryLogConfig, error)
+	SetQueryLogConfig(enabled bool, interval model.QueryLogConfigInterval, anonymizeClientIP bool) error
 	StatsConfig() (*model.StatsConfig, error)
 	SetStatsConfig(model.StatsConfigInterval) error
 	Setup() error
@@ -355,18 +355,18 @@ func (cl *client) DeleteClients(clients ...types.Client) error {
 	return nil
 }
 
-func (cl *client) QueryLogConfig() (*types.QueryLogConfig, error) {
-	qlc := &types.QueryLogConfig{}
+func (cl *client) QueryLogConfig() (*model.QueryLogConfig, error) {
+	qlc := &model.QueryLogConfig{}
 	err := cl.doGet(cl.client.R().EnableTrace().SetResult(qlc), "/querylog_info")
 	return qlc, err
 }
 
-func (cl *client) SetQueryLogConfig(enabled bool, interval float64, anonymizeClientIP bool) error {
+func (cl *client) SetQueryLogConfig(enabled bool, interval model.QueryLogConfigInterval, anonymizeClientIP bool) error {
 	cl.log.With("enabled", enabled, "interval", interval, "anonymizeClientIP", anonymizeClientIP).Info("Set query log config")
-	return cl.doPost(cl.client.R().EnableTrace().SetBody(&types.QueryLogConfig{
-		EnableConfig:      types.EnableConfig{Enabled: enabled},
-		IntervalConfig:    types.IntervalConfig{Interval: interval},
-		AnonymizeClientIP: anonymizeClientIP,
+	return cl.doPost(cl.client.R().EnableTrace().SetBody(&model.QueryLogConfig{
+		Enabled:           &enabled,
+		Interval:          &interval,
+		AnonymizeClientIp: &anonymizeClientIP,
 	}), "/querylog_config")
 }
 

@@ -110,42 +110,7 @@ var _ = Describe("Types", func() {
 			Ω(re.Key()).Should(Equal(domain + "#" + answer))
 		})
 	})
-	Context("QueryLogConfig", func() {
-		Context("Equal", func() {
-			var (
-				a *types.QueryLogConfig
-				b *types.QueryLogConfig
-			)
-			BeforeEach(func() {
-				a = &types.QueryLogConfig{}
-				b = &types.QueryLogConfig{}
-			})
-			It("should be equal", func() {
-				a.Enabled = true
-				a.Interval = 1
-				a.AnonymizeClientIP = true
-				b.Enabled = true
-				b.Interval = 1
-				b.AnonymizeClientIP = true
-				Ω(a.Equals(b)).Should(BeTrue())
-			})
-			It("should not be equal when enabled differs", func() {
-				a.Enabled = true
-				b.Enabled = false
-				Ω(a.Equals(b)).ShouldNot(BeTrue())
-			})
-			It("should not be equal when interval differs", func() {
-				a.Interval = 1
-				b.Interval = 2
-				Ω(a.Equals(b)).ShouldNot(BeTrue())
-			})
-			It("should not be equal when anonymizeClientIP differs", func() {
-				a.AnonymizeClientIP = true
-				b.AnonymizeClientIP = false
-				Ω(a.Equals(b)).ShouldNot(BeTrue())
-			})
-		})
-	})
+
 	Context("RewriteEntries", func() {
 		Context("Merge", func() {
 			var (

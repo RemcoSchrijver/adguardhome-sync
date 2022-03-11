@@ -7,6 +7,7 @@ import (
 	"github.com/bakito/adguardhome-sync/pkg/client"
 	"github.com/bakito/adguardhome-sync/pkg/client/model"
 	"github.com/bakito/adguardhome-sync/pkg/log"
+	p "github.com/bakito/adguardhome-sync/pkg/pointer"
 	"github.com/bakito/adguardhome-sync/pkg/types"
 	"github.com/bakito/adguardhome-sync/version"
 	"github.com/robfig/cron/v3"
@@ -416,7 +417,11 @@ func (w *worker) syncConfigs(o *origin, rc client.Client) error {
 			return err
 		}
 		if !o.queryLogConfig.Equals(qlc) {
-			if err = rc.SetQueryLogConfig(o.queryLogConfig.Enabled, o.queryLogConfig.Interval, o.queryLogConfig.AnonymizeClientIP); err != nil {
+			if err = rc.SetQueryLogConfig(
+				p.FromB(o.queryLogConfig.Enabled),
+				p.FromQueryLogConfigInterval(o.queryLogConfig.Interval),
+				p.FromB(o.queryLogConfig.AnonymizeClientIp),
+			); err != nil {
 				return err
 			}
 		}
@@ -494,7 +499,7 @@ type origin struct {
 	services         types.Services
 	filters          *types.FilteringStatus
 	clients          *types.Clients
-	queryLogConfig   *types.QueryLogConfig
+	queryLogConfig   *model.QueryLogConfig
 	statsConfig      *model.StatsConfig
 	accessList       *model.AccessList
 	dnsConfig        *model.DNSConfig

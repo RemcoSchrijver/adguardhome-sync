@@ -225,18 +225,6 @@ type FilteringConfig struct {
 	IntervalConfig
 }
 
-// QueryLogConfig API struct
-type QueryLogConfig struct {
-	EnableConfig
-	IntervalConfig
-	AnonymizeClientIP bool `json:"anonymize_client_ip"`
-}
-
-// Equals QueryLogConfig equal check
-func (qlc *QueryLogConfig) Equals(o *QueryLogConfig) bool {
-	return qlc.Enabled == o.Enabled && qlc.AnonymizeClientIP == o.AnonymizeClientIP && qlc.Interval == o.Interval
-}
-
 // RefreshFilter API struct
 type RefreshFilter struct {
 	Whitelist bool `json:"whitelist"`

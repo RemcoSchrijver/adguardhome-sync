@@ -100,3 +100,8 @@ func equals(a []string, b []string) bool {
 	}
 	return true
 }
+
+// Equals QueryLogConfig equal check
+func (qlc *QueryLogConfig) Equals(o *QueryLogConfig) bool {
+	return qlc.Enabled == o.Enabled && qlc.AnonymizeClientIp == o.AnonymizeClientIp && qlc.Interval == o.Interval
+}
