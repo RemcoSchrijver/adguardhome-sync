@@ -18,6 +18,7 @@ import (
 var (
 	username = uuid.NewString()
 	password = uuid.NewString()
+	foo      = "foo"
 )
 
 var _ = Describe("Client", func() {
@@ -235,28 +236,30 @@ bar`)
 			ts, cl = ClientGet("clients.json", "/clients")
 			c, err := cl.Clients()
 			Ω(err).ShouldNot(HaveOccurred())
-			Ω(c.Clients).Should(HaveLen(2))
+			Ω(c.Clients).ShouldNot(BeNil())
+			Ω(*c.Clients).Should(HaveLen(2))
 		})
 		It("should add Clients", func() {
 			ts, cl = ClientPost("/clients/add",
-				`{"ids":["id"],"use_global_settings":false,"use_global_blocked_services":false,"name":"foo","filtering_enabled":false,"parental_enabled":false,"safesearch_enabled":false,"safebrowsing_enabled":false,"disallowed":false,"disallowed_rule":""}`,
+				`{"ids":["id"],"name":"foo"}`,
 			)
-			err := cl.AddClients(types.Client{Name: "foo", Ids: []string{"id"}})
+			err := cl.AddClients(model.Client{Name: &foo, Ids: &[]string{"id"}})
 			Ω(err).ShouldNot(HaveOccurred())
 		})
 		It("should update Clients", func() {
 			ts, cl = ClientPost("/clients/update",
-				`{"name":"foo","data":{"ids":["id"],"use_global_settings":false,"use_global_blocked_services":false,"name":"foo","filtering_enabled":false,"parental_enabled":false,"safesearch_enabled":false,"safebrowsing_enabled":false,"disallowed":false,"disallowed_rule":""}}`,
+				`{"data":{"ids":["id"],"name":"foo"},"name":"foo"}`,
 			)
-			err := cl.UpdateClients(types.Client{Name: "foo", Ids: []string{"id"}})
+			err := cl.UpdateClients(model.Client{Name: &foo, Ids: &[]string{"id"}})
 			Ω(err).ShouldNot(HaveOccurred())
 		})
 		It("should delete Clients", func() {
 			ts, cl = ClientPost("/clients/delete",
-				`{"ids":["id"],"use_global_settings":false,"use_global_blocked_services":false,"name":"foo","filtering_enabled":false,"parental_enabled":false,"safesearch_enabled":false,"safebrowsing_enabled":false,"disallowed":false,"disallowed_rule":""}`,
+				`{"name":"foo"}`,
 			)
-			err := cl.DeleteClients(types.Client{Name: "foo", Ids: []string{"id"}})
+			err := cl.DeleteClients(foo)
 			Ω(err).ShouldNot(HaveOccurred())
+			defer GinkgoRecover()
 		})
 	})
 

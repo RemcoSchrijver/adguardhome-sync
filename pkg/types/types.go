@@ -1,7 +1,6 @@
 package types
 
 import (
-	"encoding/json"
 	"fmt"
 	"sort"
 	"strings"
@@ -273,58 +272,6 @@ type Client struct {
 	SafebrowsingEnabled      bool   `json:"safebrowsing_enabled"`
 	Disallowed               bool   `json:"disallowed"`
 	DisallowedRule           string `json:"disallowed_rule"`
-}
-
-// Sort sort clients
-func (cl *Client) Sort() {
-	sort.Strings(cl.Ids)
-	sort.Strings(cl.Tags)
-	sort.Strings(cl.BlockedServices)
-	sort.Strings(cl.Upstreams)
-}
-
-// Equals Clients equal check
-func (cl *Client) Equals(o *Client) bool {
-	cl.Sort()
-	o.Sort()
-
-	a, _ := json.Marshal(cl)
-	b, _ := json.Marshal(o)
-	return string(a) == string(b)
-}
-
-// Merge merge Clients
-func (clients *Clients) Merge(other *Clients) ([]Client, []Client, []Client) {
-	current := make(map[string]Client)
-	for _, client := range clients.Clients {
-		current[client.Name] = client
-	}
-
-	expected := make(map[string]Client)
-	for _, client := range other.Clients {
-		expected[client.Name] = client
-	}
-
-	var adds []Client
-	var removes []Client
-	var updates []Client
-
-	for _, cl := range expected {
-		if oc, ok := current[cl.Name]; ok {
-			if !cl.Equals(&oc) {
-				updates = append(updates, cl)
-			}
-			delete(current, cl.Name)
-		} else {
-			adds = append(adds, cl)
-		}
-	}
-
-	for _, rr := range current {
-		removes = append(removes, rr)
-	}
-
-	return adds, updates, removes
 }
 
 // ClientUpdate API struct

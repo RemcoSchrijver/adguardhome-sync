@@ -3,6 +3,7 @@ package model_test
 import (
 	"github.com/bakito/adguardhome-sync/pkg/client/model"
 	. "github.com/bakito/adguardhome-sync/pkg/pointer"
+	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
@@ -58,6 +59,53 @@ var _ = Describe("Types", func() {
 				a.AnonymizeClientIp = ToB(true)
 				b.AnonymizeClientIp = ToB(false)
 				Ω(a.Equals(b)).ShouldNot(BeTrue())
+			})
+		})
+	})
+
+	Context("Clients", func() {
+		Context("Merge", func() {
+			var (
+				originClients  *model.Clients
+				replicaClients model.Clients
+				name           string
+			)
+			BeforeEach(func() {
+				originClients = &model.Clients{}
+				replicaClients = model.Clients{}
+				name = uuid.NewString()
+			})
+
+			It("should add a missing client", func() {
+				*originClients.Clients = append(*originClients.Clients, model.Client{Name: &name})
+				a, u, d := replicaClients.Merge(originClients)
+				Ω(a).Should(HaveLen(1))
+				Ω(u).Should(BeEmpty())
+				Ω(d).Should(BeEmpty())
+
+				Ω(a[0].Name).Should(Equal(name))
+			})
+
+			It("should remove additional client", func() {
+				*replicaClients.Clients = append(*replicaClients.Clients, model.Client{Name: &name})
+				a, u, d := replicaClients.Merge(originClients)
+				Ω(a).Should(BeEmpty())
+				Ω(u).Should(BeEmpty())
+				Ω(d).Should(HaveLen(1))
+
+				Ω(d[0]).Should(Equal(name))
+			})
+
+			It("should update existing client when name differs", func() {
+				disallowed := true
+				*originClients.Clients = append(*originClients.Clients, model.Client{Name: &name, FilteringEnabled: ToB(disallowed)})
+				*replicaClients.Clients = append(*replicaClients.Clients, model.Client{Name: &name, FilteringEnabled: ToB(!disallowed)})
+				a, u, d := replicaClients.Merge(originClients)
+				Ω(a).Should(BeEmpty())
+				Ω(u).Should(HaveLen(1))
+				Ω(d).Should(BeEmpty())
+
+				Ω(*u[0].FilteringEnabled).Should(Equal(disallowed))
 			})
 		})
 	})

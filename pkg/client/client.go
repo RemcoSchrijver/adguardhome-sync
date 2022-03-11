@@ -90,10 +90,11 @@ type Client interface {
 	ToggleSafeSearch(enable bool) error
 	Services() (types.Services, error)
 	SetServices(services types.Services) error
-	Clients() (*types.Clients, error)
-	AddClients(client ...types.Client) error
-	UpdateClients(client ...types.Client) error
-	DeleteClients(client ...types.Client) error
+	// ------------------------------------------------
+	Clients() (*model.Clients, error)
+	AddClients(client ...model.Client) error
+	UpdateClients(client ...model.Client) error
+	DeleteClients(client ...string) error
 	QueryLogConfig() (*model.QueryLogConfig, error)
 	SetQueryLogConfig(enabled bool, interval model.QueryLogConfigInterval, anonymizeClientIP bool) error
 	StatsConfig() (*model.StatsConfig, error)
@@ -314,13 +315,13 @@ func (cl *client) SetServices(services types.Services) error {
 	return cl.doPost(cl.client.R().EnableTrace().SetBody(&services), "/blocked_services/set")
 }
 
-func (cl *client) Clients() (*types.Clients, error) {
-	clients := &types.Clients{}
+func (cl *client) Clients() (*model.Clients, error) {
+	clients := &model.Clients{}
 	err := cl.doGet(cl.client.R().EnableTrace().SetResult(clients), "/clients")
 	return clients, err
 }
 
-func (cl *client) AddClients(clients ...types.Client) error {
+func (cl *client) AddClients(clients ...model.Client) error {
 	for i := range clients {
 		client := clients[i]
 		cl.log.With("name", client.Name).Info("Add client")
@@ -332,10 +333,11 @@ func (cl *client) AddClients(clients ...types.Client) error {
 	return nil
 }
 
-func (cl *client) UpdateClients(clients ...types.Client) error {
-	for _, client := range clients {
+func (cl *client) UpdateClients(clients ...model.Client) error {
+	for i := range clients {
+		client := clients[i]
 		cl.log.With("name", client.Name).Info("Update client")
-		err := cl.doPost(cl.client.R().EnableTrace().SetBody(&types.ClientUpdate{Name: client.Name, Data: client}), "/clients/update")
+		err := cl.doPost(cl.client.R().EnableTrace().SetBody(&model.ClientUpdate{Name: client.Name, Data: &client}), "/clients/update")
 		if err != nil {
 			return err
 		}
@@ -343,11 +345,11 @@ func (cl *client) UpdateClients(clients ...types.Client) error {
 	return nil
 }
 
-func (cl *client) DeleteClients(clients ...types.Client) error {
+func (cl *client) DeleteClients(clients ...string) error {
 	for i := range clients {
 		client := clients[i]
-		cl.log.With("name", client.Name).Info("Delete client")
-		err := cl.doPost(cl.client.R().EnableTrace().SetBody(&client), "/clients/delete")
+		cl.log.With("name", client).Info("Delete client")
+		err := cl.doPost(cl.client.R().EnableTrace().SetBody(&model.ClientDelete{Name: &client}), "/clients/delete")
 		if err != nil {
 			return err
 		}

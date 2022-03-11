@@ -105,3 +105,59 @@ func equals(a []string, b []string) bool {
 func (qlc *QueryLogConfig) Equals(o *QueryLogConfig) bool {
 	return qlc.Enabled == o.Enabled && qlc.AnonymizeClientIp == o.AnonymizeClientIp && qlc.Interval == o.Interval
 }
+
+// Sort sort clients
+func (cl *Client) Sort() {
+	safeSort(cl.Ids)
+	safeSort(cl.Tags)
+	safeSort(cl.BlockedServices)
+	safeSort(cl.Upstreams)
+}
+
+// Equals Clients equal check
+func (cl *Client) Equals(o *Client) bool {
+	cl.Sort()
+	o.Sort()
+
+	a, _ := json.Marshal(cl)
+	b, _ := json.Marshal(o)
+	return string(a) == string(b)
+}
+
+// Merge merge Clients
+func (clients *Clients) Merge(other *Clients) ([]Client, []Client, []string) {
+	current := make(map[string]Client)
+	if clients.Clients != nil {
+		for _, client := range *clients.Clients {
+			current[*client.Name] = client
+		}
+	}
+
+	expected := make(map[string]Client)
+	if other.Clients != nil {
+		for _, client := range *other.Clients {
+			expected[*client.Name] = client
+		}
+	}
+
+	var adds []Client
+	var removes []string
+	var updates []Client
+
+	for _, cl := range expected {
+		if oc, ok := current[*cl.Name]; ok {
+			if !cl.Equals(&oc) {
+				updates = append(updates, cl)
+			}
+			delete(current, *cl.Name)
+		} else {
+			adds = append(adds, cl)
+		}
+	}
+
+	for _, rr := range current {
+		removes = append(removes, *rr.Name)
+	}
+
+	return adds, updates, removes
+}
