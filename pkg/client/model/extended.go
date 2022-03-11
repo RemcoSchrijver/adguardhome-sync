@@ -1,6 +1,9 @@
 package model
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"sort"
+)
 
 // Equals dhcp config equal check
 func (c *DhcpStatus) Equals(o *DhcpStatus) bool {
@@ -44,4 +47,56 @@ func DhcpStaticLeaseMerge(src *[]DhcpStaticLease, dest *[]DhcpStaticLease) ([]Dh
 	}
 
 	return adds, removes
+}
+
+// Equals dns config equal check
+func (c *DNSConfig) Equals(o *DNSConfig) bool {
+	c.Sort()
+	o.Sort()
+
+	a, _ := json.Marshal(c)
+	b, _ := json.Marshal(o)
+	return string(a) == string(b)
+}
+
+// Sort sort dns config
+func (c *DNSConfig) Sort() {
+	safeSort(c.LocalPtrUpstreams)
+	safeSort(c.BootstrapDns)
+	safeSort(c.LocalPtrUpstreams)
+}
+
+func safeSort(s *[]string) {
+	if s != nil {
+		sort.Strings(*s)
+	}
+}
+
+// Equals access list equal check
+func (al *AccessList) Equals(o *AccessList) bool {
+	return safeEquals(al.AllowedClients, o.AllowedClients) &&
+		safeEquals(al.DisallowedClients, o.DisallowedClients) &&
+		safeEquals(al.BlockedHosts, o.BlockedHosts)
+}
+
+func safeEquals(a *[]string, b *[]string) bool {
+	if a == nil && b == nil {
+		return true
+	}
+	if a == nil || b == nil {
+		return false
+	}
+	return equals(*a, *b)
+}
+
+func equals(a []string, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i, v := range a {
+		if v != b[i] {
+			return false
+		}
+	}
+	return true
 }

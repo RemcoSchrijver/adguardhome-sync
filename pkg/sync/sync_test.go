@@ -390,16 +390,16 @@ var _ = Describe("Sync", func() {
 
 		Context("syncDNS", func() {
 			var (
-				oal *types.AccessList
-				ral *types.AccessList
-				odc *types.DNSConfig
-				rdc *types.DNSConfig
+				oal *model.AccessList
+				ral *model.AccessList
+				odc *model.DNSConfig
+				rdc *model.DNSConfig
 			)
 			BeforeEach(func() {
-				oal = &types.AccessList{}
-				ral = &types.AccessList{}
-				odc = &types.DNSConfig{}
-				rdc = &types.DNSConfig{}
+				oal = &model.AccessList{}
+				ral = &model.AccessList{}
+				odc = &model.DNSConfig{}
+				rdc = &model.DNSConfig{}
 			})
 			It("should have no changes", func() {
 				cl.EXPECT().AccessList().Return(ral, nil)
@@ -408,7 +408,7 @@ var _ = Describe("Sync", func() {
 				Ω(err).ShouldNot(HaveOccurred())
 			})
 			It("should have access list changes", func() {
-				ral.BlockedHosts = []string{"foo"}
+				ral.BlockedHosts = &[]string{"foo"}
 				cl.EXPECT().AccessList().Return(ral, nil)
 				cl.EXPECT().DNSConfig().Return(rdc, nil)
 				cl.EXPECT().SetAccessList(oal)
@@ -416,7 +416,7 @@ var _ = Describe("Sync", func() {
 				Ω(err).ShouldNot(HaveOccurred())
 			})
 			It("should have dns config changes", func() {
-				rdc.Bootstraps = []string{"foo"}
+				rdc.BootstrapDns = &[]string{"foo"}
 				cl.EXPECT().AccessList().Return(ral, nil)
 				cl.EXPECT().DNSConfig().Return(rdc, nil)
 				cl.EXPECT().SetDNSConfig(odc)
@@ -462,8 +462,8 @@ var _ = Describe("Sync", func() {
 				cl.EXPECT().Clients().Return(&types.Clients{}, nil)
 				cl.EXPECT().QueryLogConfig().Return(&types.QueryLogConfig{}, nil)
 				cl.EXPECT().StatsConfig().Return(&types.IntervalConfig{}, nil)
-				cl.EXPECT().AccessList().Return(&types.AccessList{}, nil)
-				cl.EXPECT().DNSConfig().Return(&types.DNSConfig{}, nil)
+				cl.EXPECT().AccessList().Return(&model.AccessList{}, nil)
+				cl.EXPECT().DNSConfig().Return(&model.DNSConfig{}, nil)
 				cl.EXPECT().DHCPStatus().Return(&model.DhcpStatus{}, nil)
 
 				// replica
@@ -489,8 +489,8 @@ var _ = Describe("Sync", func() {
 				cl.EXPECT().AddClients()
 				cl.EXPECT().UpdateClients()
 				cl.EXPECT().DeleteClients()
-				cl.EXPECT().AccessList().Return(&types.AccessList{}, nil)
-				cl.EXPECT().DNSConfig().Return(&types.DNSConfig{}, nil)
+				cl.EXPECT().AccessList().Return(&model.AccessList{}, nil)
+				cl.EXPECT().DNSConfig().Return(&model.DNSConfig{}, nil)
 				cl.EXPECT().DHCPStatus().Return(&model.DhcpStatus{}, nil)
 				cl.EXPECT().AddDHCPStaticLeases().Return(nil)
 				cl.EXPECT().DeleteDHCPStaticLeases().Return(nil)
@@ -515,8 +515,8 @@ var _ = Describe("Sync", func() {
 				cl.EXPECT().Clients().Return(&types.Clients{}, nil)
 				cl.EXPECT().QueryLogConfig().Return(&types.QueryLogConfig{}, nil)
 				cl.EXPECT().StatsConfig().Return(&types.IntervalConfig{}, nil)
-				cl.EXPECT().AccessList().Return(&types.AccessList{}, nil)
-				cl.EXPECT().DNSConfig().Return(&types.DNSConfig{}, nil)
+				cl.EXPECT().AccessList().Return(&model.AccessList{}, nil)
+				cl.EXPECT().DNSConfig().Return(&model.DNSConfig{}, nil)
 				cl.EXPECT().DHCPStatus().Return(&model.DhcpStatus{}, nil)
 
 				// replica

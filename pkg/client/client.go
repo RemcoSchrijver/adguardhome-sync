@@ -99,10 +99,10 @@ type Client interface {
 	StatsConfig() (*types.IntervalConfig, error)
 	SetStatsConfig(interval float64) error
 	Setup() error
-	AccessList() (*types.AccessList, error)
-	SetAccessList(*types.AccessList) error
-	DNSConfig() (*types.DNSConfig, error)
-	SetDNSConfig(*types.DNSConfig) error
+	AccessList() (*model.AccessList, error)
+	SetAccessList(*model.AccessList) error
+	DNSConfig() (*model.DNSConfig, error)
+	SetDNSConfig(*model.DNSConfig) error
 	DHCPStatus() (*model.DhcpStatus, error)
 	SetDHCPConfig(*model.DhcpConfig) error
 	AddDHCPStaticLeases(leases ...model.DhcpStaticLease) error
@@ -407,24 +407,24 @@ func (cl *client) Setup() error {
 	return cl.doPost(req, "/install/configure")
 }
 
-func (cl *client) AccessList() (*types.AccessList, error) {
-	al := &types.AccessList{}
+func (cl *client) AccessList() (*model.AccessList, error) {
+	al := &model.AccessList{}
 	err := cl.doGet(cl.client.R().EnableTrace().SetResult(al), "/access/list")
 	return al, err
 }
 
-func (cl *client) SetAccessList(list *types.AccessList) error {
+func (cl *client) SetAccessList(list *model.AccessList) error {
 	cl.log.Info("Set access list")
 	return cl.doPost(cl.client.R().EnableTrace().SetBody(list), "/access/set")
 }
 
-func (cl *client) DNSConfig() (*types.DNSConfig, error) {
-	cfg := &types.DNSConfig{}
+func (cl *client) DNSConfig() (*model.DNSConfig, error) {
+	cfg := &model.DNSConfig{}
 	err := cl.doGet(cl.client.R().EnableTrace().SetResult(cfg), "/dns_info")
 	return cfg, err
 }
 
-func (cl *client) SetDNSConfig(config *types.DNSConfig) error {
+func (cl *client) SetDNSConfig(config *model.DNSConfig) error {
 	cl.log.Info("Set dns config list")
 	return cl.doPost(cl.client.R().EnableTrace().SetBody(config), "/dns_config")
 }
