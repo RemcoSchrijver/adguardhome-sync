@@ -426,8 +426,8 @@ func (w *worker) syncConfigs(o *origin, rc client.Client) error {
 		if err != nil {
 			return err
 		}
-		if o.statsConfig.Interval != sc.Interval {
-			if err = rc.SetStatsConfig(o.statsConfig.Interval); err != nil {
+		if o.statsConfig.Interval != nil && o.statsConfig.Interval != sc.Interval {
+			if err = rc.SetStatsConfig(*o.statsConfig.Interval); err != nil {
 				return err
 			}
 		}
@@ -495,7 +495,7 @@ type origin struct {
 	filters          *types.FilteringStatus
 	clients          *types.Clients
 	queryLogConfig   *types.QueryLogConfig
-	statsConfig      *types.IntervalConfig
+	statsConfig      *model.StatsConfig
 	accessList       *model.AccessList
 	dnsConfig        *model.DNSConfig
 	dhcpServerConfig *model.DhcpStatus

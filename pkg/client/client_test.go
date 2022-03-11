@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/bakito/adguardhome-sync/pkg/client"
+	"github.com/bakito/adguardhome-sync/pkg/client/model"
 	"github.com/bakito/adguardhome-sync/pkg/types"
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
@@ -278,11 +279,11 @@ bar`)
 			ts, cl = ClientGet("stats_info.json", "/stats_info")
 			sc, err := cl.StatsConfig()
 			Ω(err).ShouldNot(HaveOccurred())
-			Ω(sc.Interval).Should(Equal(1.0))
+			Ω(int(*sc.Interval)).Should(Equal(1))
 		})
 		It("should set StatsConfig", func() {
 			ts, cl = ClientPost("/stats_config", `{"interval":123}`)
-			err := cl.SetStatsConfig(123.0)
+			err := cl.SetStatsConfig(model.StatsConfigInterval(123))
 			Ω(err).ShouldNot(HaveOccurred())
 		})
 	})
