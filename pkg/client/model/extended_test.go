@@ -109,4 +109,23 @@ var _ = Describe("Types", func() {
 			})
 		})
 	})
+	Context("BlockedServices", func() {
+		Context("Equals", func() {
+			It("should be equal", func() {
+				s1 := model.BlockedServicesArray([]string{"a", "b"})
+				s2 := model.BlockedServicesArray([]string{"b", "a"})
+				Ω(s1.Equals(s2)).Should(BeTrue())
+			})
+			It("should not be equal different values", func() {
+				s1 := model.BlockedServicesArray([]string{"a", "b"})
+				s2 := model.BlockedServicesArray([]string{"B", "a"})
+				Ω(s1.Equals(s2)).ShouldNot(BeTrue())
+			})
+			It("should not be equal different length", func() {
+				s1 := model.BlockedServicesArray([]string{"a", "b"})
+				s2 := model.BlockedServicesArray([]string{"b", "a", "c"})
+				Ω(s1.Equals(s2)).ShouldNot(BeTrue())
+			})
+		})
+	})
 })

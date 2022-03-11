@@ -2,7 +2,6 @@ package types
 
 import (
 	"fmt"
-	"sort"
 	"strings"
 )
 
@@ -229,21 +228,6 @@ type RefreshFilter struct {
 	Whitelist bool `json:"whitelist"`
 }
 
-// Services API struct
-type Services []string
-
-// Sort sort Services
-func (s Services) Sort() {
-	sort.Strings(s)
-}
-
-// Equals Services equal check
-func (s Services) Equals(o Services) bool {
-	s.Sort()
-	o.Sort()
-	return equals(s, o)
-}
-
 // Clients API struct
 type Clients struct {
 	Clients     []Client `json:"clients"`
@@ -278,18 +262,6 @@ type Client struct {
 type ClientUpdate struct {
 	Name string `json:"name"`
 	Data Client `json:"data"`
-}
-
-func equals(a []string, b []string) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for i, v := range a {
-		if v != b[i] {
-			return false
-		}
-	}
-	return true
 }
 
 // InstallPort AdguardHome install config port

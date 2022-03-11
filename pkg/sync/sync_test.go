@@ -326,22 +326,22 @@ var _ = Describe("Sync", func() {
 		})
 		Context("syncServices", func() {
 			var (
-				os types.Services
-				rs types.Services
+				os model.BlockedServicesArray
+				rs model.BlockedServicesArray
 			)
 			BeforeEach(func() {
 				os = []string{"foo"}
 				rs = []string{"foo"}
 			})
 			It("should have no changes", func() {
-				cl.EXPECT().Services().Return(rs, nil)
+				cl.EXPECT().BlockedServices().Return(rs, nil)
 				err := w.syncServices(os, cl)
 				Ω(err).ShouldNot(HaveOccurred())
 			})
 			It("should have services changes", func() {
 				os = []string{"bar"}
-				cl.EXPECT().Services().Return(rs, nil)
-				cl.EXPECT().SetServices(os)
+				cl.EXPECT().BlockedServices().Return(rs, nil)
+				cl.EXPECT().SetBlockedServices(os)
 				err := w.syncServices(os, cl)
 				Ω(err).ShouldNot(HaveOccurred())
 			})
@@ -464,7 +464,7 @@ var _ = Describe("Sync", func() {
 				cl.EXPECT().SafeSearch()
 				cl.EXPECT().SafeBrowsing()
 				cl.EXPECT().RewriteList().Return(&types.RewriteEntries{}, nil)
-				cl.EXPECT().Services()
+				cl.EXPECT().BlockedServices()
 				cl.EXPECT().Filtering().Return(&types.FilteringStatus{}, nil)
 				cl.EXPECT().Clients().Return(&model.Clients{}, nil)
 				cl.EXPECT().QueryLogConfig().Return(&model.QueryLogConfig{}, nil)
@@ -491,7 +491,7 @@ var _ = Describe("Sync", func() {
 				cl.EXPECT().AddFilters(true)
 				cl.EXPECT().UpdateFilters(true)
 				cl.EXPECT().DeleteFilters(true)
-				cl.EXPECT().Services()
+				cl.EXPECT().BlockedServices()
 				cl.EXPECT().Clients().Return(&model.Clients{}, nil)
 				cl.EXPECT().AddClients()
 				cl.EXPECT().UpdateClients()
@@ -517,7 +517,7 @@ var _ = Describe("Sync", func() {
 				cl.EXPECT().SafeSearch()
 				cl.EXPECT().SafeBrowsing()
 				cl.EXPECT().RewriteList().Return(&types.RewriteEntries{}, nil)
-				cl.EXPECT().Services()
+				cl.EXPECT().BlockedServices()
 				cl.EXPECT().Filtering().Return(&types.FilteringStatus{}, nil)
 				cl.EXPECT().Clients().Return(&model.Clients{}, nil)
 				cl.EXPECT().QueryLogConfig().Return(&model.QueryLogConfig{}, nil)

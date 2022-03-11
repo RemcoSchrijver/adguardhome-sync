@@ -224,23 +224,4 @@ var _ = Describe("Types", func() {
 			})
 		})
 	})
-	Context("Services", func() {
-		Context("Equals", func() {
-			It("should be equal", func() {
-				s1 := types.Services([]string{"a", "b"})
-				s2 := types.Services([]string{"b", "a"})
-				Ω(s1.Equals(s2)).Should(BeTrue())
-			})
-			It("should not be equal different values", func() {
-				s1 := types.Services([]string{"a", "b"})
-				s2 := types.Services([]string{"B", "a"})
-				Ω(s1.Equals(s2)).ShouldNot(BeTrue())
-			})
-			It("should not be equal different length", func() {
-				s1 := types.Services([]string{"a", "b"})
-				s2 := types.Services([]string{"b", "a", "c"})
-				Ω(s1.Equals(s2)).ShouldNot(BeTrue())
-			})
-		})
-	})
 })

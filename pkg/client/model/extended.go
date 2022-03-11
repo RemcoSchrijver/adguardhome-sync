@@ -161,3 +161,15 @@ func (clients *Clients) Merge(other *Clients) ([]Client, []Client, []string) {
 
 	return adds, updates, removes
 }
+
+// Sort sort BlockedServices
+func (s BlockedServicesArray) Sort() {
+	sort.Strings(s)
+}
+
+// Equals BlockedServices equal check
+func (s BlockedServicesArray) Equals(o BlockedServicesArray) bool {
+	s.Sort()
+	o.Sort()
+	return equals(s, o)
+}

@@ -88,13 +88,13 @@ type Client interface {
 	ToggleParental(enable bool) error
 	SafeSearch() (bool, error)
 	ToggleSafeSearch(enable bool) error
-	Services() (types.Services, error)
-	SetServices(services types.Services) error
 	// ------------------------------------------------
+	BlockedServices() (model.BlockedServicesArray, error)
+	SetBlockedServices(model.BlockedServicesArray) error
 	Clients() (*model.Clients, error)
-	AddClients(client ...model.Client) error
-	UpdateClients(client ...model.Client) error
-	DeleteClients(client ...string) error
+	AddClients(...model.Client) error
+	UpdateClients(...model.Client) error
+	DeleteClients(...string) error
 	QueryLogConfig() (*model.QueryLogConfig, error)
 	SetQueryLogConfig(enabled bool, interval model.QueryLogConfigInterval, anonymizeClientIP bool) error
 	StatsConfig() (*model.StatsConfig, error)
@@ -304,13 +304,13 @@ func (cl *client) ToggleFiltering(enabled bool, interval float64) error {
 	}), "/filtering/config")
 }
 
-func (cl *client) Services() (types.Services, error) {
-	svcs := types.Services{}
+func (cl *client) BlockedServices() (model.BlockedServicesArray, error) {
+	svcs := model.BlockedServicesArray{}
 	err := cl.doGet(cl.client.R().EnableTrace().SetResult(&svcs), "/blocked_services/list")
 	return svcs, err
 }
 
-func (cl *client) SetServices(services types.Services) error {
+func (cl *client) SetBlockedServices(services model.BlockedServicesArray) error {
 	cl.log.With("services", len(services)).Info("Set services")
 	return cl.doPost(cl.client.R().EnableTrace().SetBody(&services), "/blocked_services/set")
 }

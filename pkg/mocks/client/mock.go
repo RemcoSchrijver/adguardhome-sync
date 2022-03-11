@@ -123,6 +123,21 @@ func (mr *MockClientMockRecorder) AddRewriteEntries(arg0 ...interface{}) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddRewriteEntries", reflect.TypeOf((*MockClient)(nil).AddRewriteEntries), arg0...)
 }
 
+// BlockedServices mocks base method.
+func (m *MockClient) BlockedServices() (model.BlockedServicesArray, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "BlockedServices")
+	ret0, _ := ret[0].(model.BlockedServicesArray)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// BlockedServices indicates an expected call of BlockedServices.
+func (mr *MockClientMockRecorder) BlockedServices() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BlockedServices", reflect.TypeOf((*MockClient)(nil).BlockedServices))
+}
+
 // Clients mocks base method.
 func (m *MockClient) Clients() (*model.Clients, error) {
 	m.ctrl.T.Helper()
@@ -359,21 +374,6 @@ func (mr *MockClientMockRecorder) SafeSearch() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SafeSearch", reflect.TypeOf((*MockClient)(nil).SafeSearch))
 }
 
-// Services mocks base method.
-func (m *MockClient) Services() (types.Services, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Services")
-	ret0, _ := ret[0].(types.Services)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Services indicates an expected call of Services.
-func (mr *MockClientMockRecorder) Services() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Services", reflect.TypeOf((*MockClient)(nil).Services))
-}
-
 // SetAccessList mocks base method.
 func (m *MockClient) SetAccessList(arg0 *model.AccessList) error {
 	m.ctrl.T.Helper()
@@ -386,6 +386,20 @@ func (m *MockClient) SetAccessList(arg0 *model.AccessList) error {
 func (mr *MockClientMockRecorder) SetAccessList(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetAccessList", reflect.TypeOf((*MockClient)(nil).SetAccessList), arg0)
+}
+
+// SetBlockedServices mocks base method.
+func (m *MockClient) SetBlockedServices(arg0 model.BlockedServicesArray) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SetBlockedServices", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SetBlockedServices indicates an expected call of SetBlockedServices.
+func (mr *MockClientMockRecorder) SetBlockedServices(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetBlockedServices", reflect.TypeOf((*MockClient)(nil).SetBlockedServices), arg0)
 }
 
 // SetCustomRules mocks base method.
@@ -442,20 +456,6 @@ func (m *MockClient) SetQueryLogConfig(arg0 bool, arg1 model.QueryLogConfigInter
 func (mr *MockClientMockRecorder) SetQueryLogConfig(arg0, arg1, arg2 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetQueryLogConfig", reflect.TypeOf((*MockClient)(nil).SetQueryLogConfig), arg0, arg1, arg2)
-}
-
-// SetServices mocks base method.
-func (m *MockClient) SetServices(arg0 types.Services) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SetServices", arg0)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// SetServices indicates an expected call of SetServices.
-func (mr *MockClientMockRecorder) SetServices(arg0 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetServices", reflect.TypeOf((*MockClient)(nil).SetServices), arg0)
 }
 
 // SetStatsConfig mocks base method.

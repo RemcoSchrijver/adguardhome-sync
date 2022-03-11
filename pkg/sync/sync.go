@@ -129,7 +129,7 @@ func (w *worker) sync() {
 		return
 	}
 
-	o.services, err = oc.Services()
+	o.services, err = oc.BlockedServices()
 	if err != nil {
 		sl.With("error", err).Error("Error getting origin services")
 		return
@@ -267,15 +267,15 @@ func (w *worker) statusWithSetup(rl *zap.SugaredLogger, replica types.AdGuardIns
 	return rs, err
 }
 
-func (w *worker) syncServices(os types.Services, replica client.Client) error {
+func (w *worker) syncServices(os model.BlockedServicesArray, replica client.Client) error {
 	if w.cfg.Features.Services {
-		rs, err := replica.Services()
+		rs, err := replica.BlockedServices()
 		if err != nil {
 			return err
 		}
 
 		if !os.Equals(rs) {
-			if err := replica.SetServices(os); err != nil {
+			if err := replica.SetBlockedServices(os); err != nil {
 				return err
 			}
 		}
@@ -496,7 +496,7 @@ func (w *worker) syncDHCPServer(osc *model.DhcpStatus, rc client.Client) error {
 type origin struct {
 	status           *types.Status
 	rewrites         *types.RewriteEntries
-	services         types.Services
+	services         model.BlockedServicesArray
 	filters          *types.FilteringStatus
 	clients          *model.Clients
 	queryLogConfig   *model.QueryLogConfig
