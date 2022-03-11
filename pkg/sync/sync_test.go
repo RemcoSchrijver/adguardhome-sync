@@ -464,7 +464,7 @@ var _ = Describe("Sync", func() {
 				cl.EXPECT().StatsConfig().Return(&types.IntervalConfig{}, nil)
 				cl.EXPECT().AccessList().Return(&types.AccessList{}, nil)
 				cl.EXPECT().DNSConfig().Return(&types.DNSConfig{}, nil)
-				cl.EXPECT().DHCPServerConfig().Return(&model.DhcpStatus{}, nil)
+				cl.EXPECT().DHCPStatus().Return(&model.DhcpStatus{}, nil)
 
 				// replica
 				cl.EXPECT().Host()
@@ -491,7 +491,7 @@ var _ = Describe("Sync", func() {
 				cl.EXPECT().DeleteClients()
 				cl.EXPECT().AccessList().Return(&types.AccessList{}, nil)
 				cl.EXPECT().DNSConfig().Return(&types.DNSConfig{}, nil)
-				cl.EXPECT().DHCPServerConfig().Return(&model.DhcpStatus{}, nil)
+				cl.EXPECT().DHCPStatus().Return(&model.DhcpStatus{}, nil)
 				cl.EXPECT().AddDHCPStaticLeases().Return(nil)
 				cl.EXPECT().DeleteDHCPStaticLeases().Return(nil)
 				w.sync()
@@ -517,7 +517,7 @@ var _ = Describe("Sync", func() {
 				cl.EXPECT().StatsConfig().Return(&types.IntervalConfig{}, nil)
 				cl.EXPECT().AccessList().Return(&types.AccessList{}, nil)
 				cl.EXPECT().DNSConfig().Return(&types.DNSConfig{}, nil)
-				cl.EXPECT().DHCPServerConfig().Return(&model.DhcpStatus{}, nil)
+				cl.EXPECT().DHCPStatus().Return(&model.DhcpStatus{}, nil)
 
 				// replica
 				cl.EXPECT().Host()

@@ -138,19 +138,19 @@ func (mr *MockClientMockRecorder) Clients() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Clients", reflect.TypeOf((*MockClient)(nil).Clients))
 }
 
-// DHCPServerConfig mocks base method.
-func (m *MockClient) DHCPServerConfig() (*model.DhcpStatus, error) {
+// DHCPStatus mocks base method.
+func (m *MockClient) DHCPStatus() (*model.DhcpStatus, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DHCPServerConfig")
+	ret := m.ctrl.Call(m, "DHCPStatus")
 	ret0, _ := ret[0].(*model.DhcpStatus)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// DHCPServerConfig indicates an expected call of DHCPServerConfig.
-func (mr *MockClientMockRecorder) DHCPServerConfig() *gomock.Call {
+// DHCPStatus indicates an expected call of DHCPStatus.
+func (mr *MockClientMockRecorder) DHCPStatus() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DHCPServerConfig", reflect.TypeOf((*MockClient)(nil).DHCPServerConfig))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DHCPStatus", reflect.TypeOf((*MockClient)(nil).DHCPStatus))
 }
 
 // DNSConfig mocks base method.
@@ -402,18 +402,18 @@ func (mr *MockClientMockRecorder) SetCustomRules(arg0 interface{}) *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetCustomRules", reflect.TypeOf((*MockClient)(nil).SetCustomRules), arg0)
 }
 
-// SetDHCPServerConfig mocks base method.
-func (m *MockClient) SetDHCPServerConfig(arg0 *model.DhcpStatus) error {
+// SetDHCPConfig mocks base method.
+func (m *MockClient) SetDHCPConfig(arg0 *model.DhcpConfig) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SetDHCPServerConfig", arg0)
+	ret := m.ctrl.Call(m, "SetDHCPConfig", arg0)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// SetDHCPServerConfig indicates an expected call of SetDHCPServerConfig.
-func (mr *MockClientMockRecorder) SetDHCPServerConfig(arg0 interface{}) *gomock.Call {
+// SetDHCPConfig indicates an expected call of SetDHCPConfig.
+func (mr *MockClientMockRecorder) SetDHCPConfig(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetDHCPServerConfig", reflect.TypeOf((*MockClient)(nil).SetDHCPServerConfig), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetDHCPConfig", reflect.TypeOf((*MockClient)(nil).SetDHCPConfig), arg0)
 }
 
 // SetDNSConfig mocks base method.

@@ -167,7 +167,7 @@ func (w *worker) sync() {
 		return
 	}
 
-	o.dhcpServerConfig, err = oc.DHCPServerConfig()
+	o.dhcpServerConfig, err = oc.DHCPStatus()
 	if err != nil {
 		sl.With("error", err).Error("Error getting dhcp server config")
 		return
@@ -463,13 +463,13 @@ func (w *worker) syncDNS(oal *types.AccessList, odc *types.DNSConfig, rc client.
 }
 
 func (w *worker) syncDHCPServer(osc *model.DhcpStatus, rc client.Client) error {
-	sc, err := rc.DHCPServerConfig()
+	sc, err := rc.DHCPStatus()
 	if w.cfg.Features.DHCP.ServerConfig {
 		if err != nil {
 			return err
 		}
 		if !sc.Equals(osc) {
-			if err = rc.SetDHCPServerConfig(osc); err != nil {
+			if err = rc.SetDHCPConfig(osc.ToConfig()); err != nil {
 				return err
 			}
 		}

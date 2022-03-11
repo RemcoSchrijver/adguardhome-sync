@@ -9,6 +9,15 @@ func (c *DhcpStatus) Equals(o *DhcpStatus) bool {
 	return string(a) == string(b)
 }
 
+func (c *DhcpStatus) ToConfig() *DhcpConfig {
+	return &DhcpConfig{
+		Enabled:       c.Enabled,
+		InterfaceName: c.InterfaceName,
+		V4:            c.V4,
+		V6:            c.V6,
+	}
+}
+
 // DhcpStaticLeaseMerge merge the leases
 func DhcpStaticLeaseMerge(src *[]DhcpStaticLease, dest *[]DhcpStaticLease) ([]DhcpStaticLease, []DhcpStaticLease) {
 	current := make(map[string]DhcpStaticLease)
