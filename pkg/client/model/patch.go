@@ -1,9 +1,10 @@
 package model
 
-type FilterSetUrlData struct { //nolint
-	Enabled *bool   `json:"enabled,omitempty"`
-	Name    *string `json:"name,omitempty"`
-	Url     *string `json:"url,omitempty"` //nolint
+// FilterSetUrlPatch URL settings
+type FilterSetUrlPatch struct {
+	Data      Filter  `json:"data,omitempty"`
+	Url       *string `json:"url,omitempty"`
+	Whitelist *bool   `json:"whitelist,omitempty"`
 }
 
 type RemoveUrlRequestPatch struct { //nolint

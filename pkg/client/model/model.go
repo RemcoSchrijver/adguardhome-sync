@@ -6,7 +6,6 @@ package model
 import (
 	"encoding/json"
 	"fmt"
-	"time"
 )
 
 const (
@@ -502,12 +501,11 @@ type Error struct {
 
 // Filter subscription info
 type Filter struct {
-	Enabled     bool      `json:"enabled"`
-	Id          int64     `json:"id"`
-	LastUpdated time.Time `json:"last_updated"`
-	Name        string    `json:"name"`
-	RulesCount  uint32    `json:"rules_count"`
-	Url         string    `json:"url"`
+	Enabled    bool   `json:"enabled"`
+	Id         int64  `json:"id"`
+	Name       string `json:"name"`
+	RulesCount uint32 `json:"rules_count"`
+	Url        string `json:"url"`
 }
 
 // Check Host Result
@@ -557,11 +555,7 @@ type FilterRefreshResponse struct {
 
 // Filtering URL settings
 type FilterSetUrl struct {
-	Data *struct {
-		Enabled *bool   `json:"enabled,omitempty"`
-		Name    *string `json:"name,omitempty"`
-		Url     *string `json:"url,omitempty"`
-	} `json:"data,omitempty"`
+	Data      Filter  `json:"data,omitempty"`
 	Url       *string `json:"url,omitempty"`
 	Whitelist *bool   `json:"whitelist,omitempty"`
 }
@@ -1412,4 +1406,3 @@ func (a WhoisInfo) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(object)
 }
-

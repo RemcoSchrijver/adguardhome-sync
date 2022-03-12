@@ -270,11 +270,7 @@ func (cl *client) DeleteFilters(whitelist bool, filters ...model.Filter) error {
 func (cl *client) UpdateFilters(whitelist bool, filters ...model.Filter) error {
 	for _, f := range filters {
 		cl.log.With("url", f.Url, "whitelist", whitelist, "enabled", f.Enabled).Info("Update filter")
-		fu := &model.FilterSetUrl{Whitelist: &whitelist, Url: &f.Url, Data: (*struct {
-			Enabled *bool   `json:"enabled,omitempty"`
-			Name    *string `json:"name,omitempty"`
-			Url     *string `json:"url,omitempty"` //nolint
-		})(&model.FilterSetUrlData{})}
+		fu := &model.FilterSetUrlPatch{Whitelist: &whitelist, Url: &f.Url, Data: f}
 		err := cl.doPost(cl.client.R().EnableTrace().SetBody(fu), "/filtering/set_url")
 		if err != nil {
 			return err

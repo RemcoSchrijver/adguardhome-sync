@@ -73,8 +73,8 @@ var _ = Describe("Client", func() {
 		})
 		It("should update Filters", func() {
 			ts, cl = ClientPost("/filtering/set_url",
-				`{"data":{},"url":"foo","whitelist":true}`,
-				`{"data":{},"url":"bar","whitelist":true}`,
+				`{"data":{"enabled":false,"id":0,"name":"","rules_count":0,"url":"foo"},"url":"foo","whitelist":true}`,
+				`{"data":{"enabled":false,"id":0,"name":"","rules_count":0,"url":"bar"},"url":"bar","whitelist":true}`,
 			)
 			err := cl.UpdateFilters(true, model.Filter{Url: "foo"}, model.Filter{Url: "bar"})
 			Ω(err).ShouldNot(HaveOccurred())
