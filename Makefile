@@ -58,3 +58,8 @@ diff-model:
 	wget -q https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/v0.107.0/openapi/openapi.yaml -O a.yaml
 	wget -q https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/v0.107.5/openapi/openapi.yaml -O b.yaml
 	diff a.yaml b.yaml || rm -f a.yaml b.yaml
+
+diff-replica:
+	podman cp  adgardhome-replica:/opt/adguardhome/conf/AdGuardHome.yaml tmp/current-config.yaml.tmp
+	cat tmp/current-config.yaml.tmp | grep -v " id: " | grep -v " password: " > tmp/current-config.yaml
+	diff tmp/reference-config.yaml tmp/current-config.yaml

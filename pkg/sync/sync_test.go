@@ -348,12 +348,14 @@ var _ = Describe("Sync", func() {
 		})
 		Context("syncFilters", func() {
 			var (
-				of *types.FilteringStatus
-				rf *types.FilteringStatus
+				of *model.FilterStatusPatch
+				rf *model.FilterStatusPatch
 			)
 			BeforeEach(func() {
-				of = &types.FilteringStatus{}
-				rf = &types.FilteringStatus{}
+				of = &model.FilterStatusPatch{}
+				of.FilterStatus = model.FilterStatus{Filters: &[]model.Filter{}}
+				rf = &model.FilterStatusPatch{}
+				rf.FilterStatus = model.FilterStatus{Filters: &[]model.Filter{}}
 			})
 			It("should have no changes", func() {
 				cl.EXPECT().Filtering().Return(rf, nil)
@@ -367,7 +369,7 @@ var _ = Describe("Sync", func() {
 				Ω(err).ShouldNot(HaveOccurred())
 			})
 			It("should have changes user roles", func() {
-				of.UserRules = []string{"foo"}
+				of.UserRules = &[]string{"foo"}
 				cl.EXPECT().Filtering().Return(rf, nil)
 				cl.EXPECT().AddFilters(false)
 				cl.EXPECT().UpdateFilters(false)
@@ -375,13 +377,13 @@ var _ = Describe("Sync", func() {
 				cl.EXPECT().AddFilters(true)
 				cl.EXPECT().UpdateFilters(true)
 				cl.EXPECT().DeleteFilters(true)
-				cl.EXPECT().SetCustomRules(of.UserRules)
+				cl.EXPECT().SetCustomRules(of.UserRulesString())
 				err := w.syncFilters(of, cl)
 				Ω(err).ShouldNot(HaveOccurred())
 			})
 			It("should have changed filtering config", func() {
-				of.Enabled = true
-				of.Interval = 123
+				of.Enabled = ToB(true)
+				of.Interval = ToI(123)
 				cl.EXPECT().Filtering().Return(rf, nil)
 				cl.EXPECT().AddFilters(false)
 				cl.EXPECT().UpdateFilters(false)
@@ -389,7 +391,7 @@ var _ = Describe("Sync", func() {
 				cl.EXPECT().AddFilters(true)
 				cl.EXPECT().UpdateFilters(true)
 				cl.EXPECT().DeleteFilters(true)
-				cl.EXPECT().ToggleFiltering(of.Enabled, of.Interval)
+				cl.EXPECT().ToggleFiltering(FromB(of.Enabled), FromI(of.Interval))
 				err := w.syncFilters(of, cl)
 				Ω(err).ShouldNot(HaveOccurred())
 			})
@@ -465,7 +467,7 @@ var _ = Describe("Sync", func() {
 				cl.EXPECT().SafeBrowsing()
 				cl.EXPECT().RewriteList().Return(&types.RewriteEntries{}, nil)
 				cl.EXPECT().BlockedServices()
-				cl.EXPECT().Filtering().Return(&types.FilteringStatus{}, nil)
+				cl.EXPECT().Filtering().Return(&model.FilterStatusPatch{}, nil)
 				cl.EXPECT().Clients().Return(&model.Clients{}, nil)
 				cl.EXPECT().QueryLogConfig().Return(&model.QueryLogConfig{}, nil)
 				cl.EXPECT().StatsConfig().Return(&model.StatsConfig{}, nil)
@@ -484,7 +486,7 @@ var _ = Describe("Sync", func() {
 				cl.EXPECT().RewriteList().Return(&types.RewriteEntries{}, nil)
 				cl.EXPECT().AddRewriteEntries()
 				cl.EXPECT().DeleteRewriteEntries()
-				cl.EXPECT().Filtering().Return(&types.FilteringStatus{}, nil)
+				cl.EXPECT().Filtering().Return(&model.FilterStatusPatch{}, nil)
 				cl.EXPECT().AddFilters(false)
 				cl.EXPECT().UpdateFilters(false)
 				cl.EXPECT().DeleteFilters(false)
@@ -518,7 +520,7 @@ var _ = Describe("Sync", func() {
 				cl.EXPECT().SafeBrowsing()
 				cl.EXPECT().RewriteList().Return(&types.RewriteEntries{}, nil)
 				cl.EXPECT().BlockedServices()
-				cl.EXPECT().Filtering().Return(&types.FilteringStatus{}, nil)
+				cl.EXPECT().Filtering().Return(&model.FilterStatusPatch{}, nil)
 				cl.EXPECT().Clients().Return(&model.Clients{}, nil)
 				cl.EXPECT().QueryLogConfig().Return(&model.QueryLogConfig{}, nil)
 				cl.EXPECT().StatsConfig().Return(&model.StatsConfig{}, nil)

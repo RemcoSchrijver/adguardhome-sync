@@ -1,6 +1,9 @@
 package model_test
 
 import (
+	"encoding/json"
+	"io/ioutil"
+
 	"github.com/bakito/adguardhome-sync/pkg/client/model"
 	. "github.com/bakito/adguardhome-sync/pkg/pointer"
 	"github.com/google/uuid"
@@ -9,6 +12,21 @@ import (
 )
 
 var _ = Describe("Types", func() {
+	var url string
+	BeforeEach(func() {
+		url = "https://" + uuid.NewString()
+	})
+
+	Context("FilteringStatus", func() {
+		It("should correctly parse json", func() {
+			b, err := ioutil.ReadFile("../..//testdata/filtering-status.json")
+			fs := &model.FilterStatus{}
+			Ω(err).ShouldNot(HaveOccurred())
+			err = json.Unmarshal(b, fs)
+			Ω(err).ShouldNot(HaveOccurred())
+		})
+	})
+
 	Context("DNSConfig", func() {
 		Context("Equals", func() {
 			It("should be equal", func() {
@@ -125,6 +143,82 @@ var _ = Describe("Types", func() {
 				s1 := model.BlockedServicesArray([]string{"a", "b"})
 				s2 := model.BlockedServicesArray([]string{"b", "a", "c"})
 				Ω(s1.Equals(s2)).ShouldNot(BeTrue())
+			})
+		})
+	})
+
+	Context("UserRules", func() {
+		It("should join the rules correctly", func() {
+			r1 := uuid.NewString()
+			r2 := uuid.NewString()
+			fs := model.FilterStatus{UserRules: &[]string{r1, r2}}
+			Ω(fs.UserRulesString().Value).Should(Equal(r1 + "\n" + r2))
+		})
+	})
+
+	Context("Filters", func() {
+		Context("Merge", func() {
+			var (
+				originFilters  *[]model.Filter
+				replicaFilters *[]model.Filter
+			)
+			BeforeEach(func() {
+				originFilters = &[]model.Filter{}
+				replicaFilters = &[]model.Filter{}
+			})
+
+			It("should add a missing filter", func() {
+				*originFilters = append(*originFilters, model.Filter{Url: url})
+				a, u, d := model.MergeFilters(replicaFilters, originFilters)
+				Ω(a).Should(HaveLen(1))
+				Ω(u).Should(BeEmpty())
+				Ω(d).Should(BeEmpty())
+
+				Ω(a[0].Url).Should(Equal(url))
+			})
+
+			It("should remove additional filter", func() {
+				*replicaFilters = append(*replicaFilters, model.Filter{Url: url})
+				a, u, d := model.MergeFilters(replicaFilters, originFilters)
+				Ω(a).Should(BeEmpty())
+				Ω(u).Should(BeEmpty())
+				Ω(d).Should(HaveLen(1))
+
+				Ω(d[0].Url).Should(Equal(url))
+			})
+
+			It("should update existing filter when enabled differs", func() {
+				enabled := true
+				*originFilters = append(*originFilters, model.Filter{Url: url, Enabled: enabled})
+				*replicaFilters = append(*replicaFilters, model.Filter{Url: url, Enabled: !enabled})
+				a, u, d := model.MergeFilters(replicaFilters, originFilters)
+				Ω(a).Should(BeEmpty())
+				Ω(u).Should(HaveLen(1))
+				Ω(d).Should(BeEmpty())
+
+				Ω(u[0].Enabled).Should(Equal(enabled))
+			})
+
+			It("should update existing filter when name differs", func() {
+				name1 := uuid.NewString()
+				name2 := uuid.NewString()
+				*originFilters = append(*originFilters, model.Filter{Url: url, Name: name1})
+				*replicaFilters = append(*replicaFilters, model.Filter{Url: url, Name: name2})
+				a, u, d := model.MergeFilters(replicaFilters, originFilters)
+				Ω(a).Should(BeEmpty())
+				Ω(u).Should(HaveLen(1))
+				Ω(d).Should(BeEmpty())
+
+				Ω(u[0].Name).Should(Equal(name1))
+			})
+
+			It("should have no changes", func() {
+				*originFilters = append(*originFilters, model.Filter{Url: url})
+				*replicaFilters = append(*replicaFilters, model.Filter{Url: url})
+				a, u, d := model.MergeFilters(replicaFilters, originFilters)
+				Ω(a).Should(BeEmpty())
+				Ω(u).Should(BeEmpty())
+				Ω(d).Should(BeEmpty())
 			})
 		})
 	})

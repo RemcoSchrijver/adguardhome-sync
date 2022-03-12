@@ -283,7 +283,7 @@ func (w *worker) syncServices(os model.BlockedServicesArray, replica client.Clie
 	return nil
 }
 
-func (w *worker) syncFilters(of *types.FilteringStatus, replica client.Client) error {
+func (w *worker) syncFilters(of *model.FilterStatusPatch, replica client.Client) error {
 	if w.cfg.Features.Filters {
 		rf, err := replica.Filtering()
 		if err != nil {
@@ -297,12 +297,13 @@ func (w *worker) syncFilters(of *types.FilteringStatus, replica client.Client) e
 			return err
 		}
 
-		if of.UserRules.String() != rf.UserRules.String() {
-			return replica.SetCustomRules(of.UserRules)
+		ur := of.UserRulesString()
+		if ur.Value != rf.UserRulesString().Value {
+			return replica.SetCustomRules(ur)
 		}
 
 		if of.Enabled != rf.Enabled || of.Interval != rf.Interval {
-			if err = replica.ToggleFiltering(of.Enabled, of.Interval); err != nil {
+			if err = replica.ToggleFiltering(p.FromB(of.Enabled), p.FromI(of.Interval)); err != nil {
 				return err
 			}
 		}
@@ -310,8 +311,8 @@ func (w *worker) syncFilters(of *types.FilteringStatus, replica client.Client) e
 	return nil
 }
 
-func (w *worker) syncFilterType(of types.Filters, rFilters types.Filters, whitelist bool, replica client.Client) error {
-	fa, fu, fd := rFilters.Merge(of)
+func (w *worker) syncFilterType(of *[]model.Filter, rFilters *[]model.Filter, whitelist bool, replica client.Client) error {
+	fa, fu, fd := model.MergeFilters(rFilters, of)
 
 	if err := replica.AddFilters(whitelist, fa...); err != nil {
 		return err
@@ -497,7 +498,7 @@ type origin struct {
 	status           *types.Status
 	rewrites         *types.RewriteEntries
 	services         model.BlockedServicesArray
-	filters          *types.FilteringStatus
+	filters          *model.FilterStatusPatch
 	clients          *model.Clients
 	queryLogConfig   *model.QueryLogConfig
 	statsConfig      *model.StatsConfig

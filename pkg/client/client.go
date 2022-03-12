@@ -75,20 +75,20 @@ type Client interface {
 	RewriteList() (*types.RewriteEntries, error)
 	AddRewriteEntries(e ...types.RewriteEntry) error
 	DeleteRewriteEntries(e ...types.RewriteEntry) error
-	Filtering() (*types.FilteringStatus, error)
-	ToggleFiltering(enabled bool, interval float64) error
-	AddFilters(whitelist bool, e ...types.Filter) error
-	DeleteFilters(whitelist bool, e ...types.Filter) error
-	UpdateFilters(whitelist bool, e ...types.Filter) error
+	// ------------------------------------------------
+	Filtering() (*model.FilterStatusPatch, error)
+	ToggleFiltering(enabled bool, interval int) error
+	AddFilters(whitelist bool, e ...model.Filter) error
+	DeleteFilters(whitelist bool, e ...model.Filter) error
+	UpdateFilters(whitelist bool, e ...model.Filter) error
 	RefreshFilters(whitelist bool) error
-	SetCustomRules(rules types.UserRules) error
+	SetCustomRules(model.UserRules) error
 	SafeBrowsing() (bool, error)
 	ToggleSafeBrowsing(enable bool) error
 	Parental() (bool, error)
 	ToggleParental(enable bool) error
 	SafeSearch() (bool, error)
 	ToggleSafeSearch(enable bool) error
-	// ------------------------------------------------
 	BlockedServices() (model.BlockedServicesArray, error)
 	SetBlockedServices(model.BlockedServicesArray) error
 	Clients() (*model.Clients, error)
@@ -239,17 +239,16 @@ func (cl *client) toggleBool(mode string, enable bool) error {
 	return cl.doPost(cl.client.R().EnableTrace(), fmt.Sprintf("/%s/%s", mode, target))
 }
 
-func (cl *client) Filtering() (*types.FilteringStatus, error) {
-	f := &types.FilteringStatus{}
+func (cl *client) Filtering() (*model.FilterStatusPatch, error) {
+	f := &model.FilterStatusPatch{}
 	err := cl.doGet(cl.client.R().EnableTrace().SetResult(f), "/filtering/status")
 	return f, err
 }
 
-func (cl *client) AddFilters(whitelist bool, filters ...types.Filter) error {
+func (cl *client) AddFilters(whitelist bool, filters ...model.Filter) error {
 	for _, f := range filters {
-		cl.log.With("url", f.URL, "whitelist", whitelist, "enabled", f.Enabled).Info("Add filter")
-		ff := &types.Filter{Name: f.Name, URL: f.URL, Whitelist: whitelist}
-		err := cl.doPost(cl.client.R().EnableTrace().SetBody(ff), "/filtering/add_url")
+		cl.log.With("url", f.Url, "whitelist", whitelist, "enabled", f.Enabled).Info("Add filter")
+		err := cl.doPost(cl.client.R().EnableTrace().SetBody(&model.AddUrlRequest{Name: &f.Name, Url: &f.Url, Whitelist: &whitelist}), "/filtering/add_url")
 		if err != nil {
 			return err
 		}
@@ -257,11 +256,10 @@ func (cl *client) AddFilters(whitelist bool, filters ...types.Filter) error {
 	return nil
 }
 
-func (cl *client) DeleteFilters(whitelist bool, filters ...types.Filter) error {
+func (cl *client) DeleteFilters(whitelist bool, filters ...model.Filter) error {
 	for _, f := range filters {
-		cl.log.With("url", f.URL, "whitelist", whitelist, "enabled", f.Enabled).Info("Delete filter")
-		ff := &types.Filter{URL: f.URL, Whitelist: whitelist}
-		err := cl.doPost(cl.client.R().EnableTrace().SetBody(ff), "/filtering/remove_url")
+		cl.log.With("url", f.Url, "whitelist", whitelist, "enabled", f.Enabled).Info("Delete filter")
+		err := cl.doPost(cl.client.R().EnableTrace().SetBody(&model.RemoveUrlRequestPatch{RemoveUrlRequest: model.RemoveUrlRequest{Url: &f.Url}, Whitelist: whitelist}), "/filtering/remove_url")
 		if err != nil {
 			return err
 		}
@@ -269,10 +267,14 @@ func (cl *client) DeleteFilters(whitelist bool, filters ...types.Filter) error {
 	return nil
 }
 
-func (cl *client) UpdateFilters(whitelist bool, filters ...types.Filter) error {
+func (cl *client) UpdateFilters(whitelist bool, filters ...model.Filter) error {
 	for _, f := range filters {
-		cl.log.With("url", f.URL, "whitelist", whitelist, "enabled", f.Enabled).Info("Update filter")
-		fu := &types.FilterUpdate{Whitelist: whitelist, URL: f.URL, Data: types.Filter{ID: f.ID, Name: f.Name, URL: f.URL, Whitelist: whitelist, Enabled: f.Enabled}}
+		cl.log.With("url", f.Url, "whitelist", whitelist, "enabled", f.Enabled).Info("Update filter")
+		fu := &model.FilterSetUrl{Whitelist: &whitelist, Url: &f.Url, Data: (*struct {
+			Enabled *bool   `json:"enabled,omitempty"`
+			Name    *string `json:"name,omitempty"`
+			Url     *string `json:"url,omitempty"` //nolint
+		})(&model.FilterSetUrlData{})}
 		err := cl.doPost(cl.client.R().EnableTrace().SetBody(fu), "/filtering/set_url")
 		if err != nil {
 			return err
@@ -283,7 +285,7 @@ func (cl *client) UpdateFilters(whitelist bool, filters ...types.Filter) error {
 
 func (cl *client) RefreshFilters(whitelist bool) error {
 	cl.log.With("whitelist", whitelist).Info("Refresh filter")
-	return cl.doPost(cl.client.R().EnableTrace().SetBody(&types.RefreshFilter{Whitelist: whitelist}), "/filtering/refresh")
+	return cl.doPost(cl.client.R().EnableTrace().SetBody(&model.FilterRefreshRequest{Whitelist: &whitelist}), "/filtering/refresh")
 }
 
 func (cl *client) ToggleProtection(enable bool) error {
@@ -291,16 +293,16 @@ func (cl *client) ToggleProtection(enable bool) error {
 	return cl.doPost(cl.client.R().EnableTrace().SetBody(&types.Protection{ProtectionEnabled: enable}), "/dns_config")
 }
 
-func (cl *client) SetCustomRules(rules types.UserRules) error {
-	cl.log.With("rules", len(rules)).Info("Set user rules")
-	return cl.doPost(cl.client.R().EnableTrace().SetBody(rules.String()), "/filtering/set_rules")
+func (cl *client) SetCustomRules(ur model.UserRules) error {
+	cl.log.With("rules", ur.Cnt).Info("Set user rules")
+	return cl.doPost(cl.client.R().EnableTrace().SetBody(ur.Value), "/filtering/set_rules")
 }
 
-func (cl *client) ToggleFiltering(enabled bool, interval float64) error {
+func (cl *client) ToggleFiltering(enabled bool, interval int) error {
 	cl.log.With("enabled", enabled, "interval", interval).Info("Toggle filtering")
-	return cl.doPost(cl.client.R().EnableTrace().SetBody(&types.FilteringConfig{
-		EnableConfig:   types.EnableConfig{Enabled: enabled},
-		IntervalConfig: types.IntervalConfig{Interval: interval},
+	return cl.doPost(cl.client.R().EnableTrace().SetBody(&model.FilterStatus{
+		Enabled:  &enabled,
+		Interval: &interval,
 	}), "/filtering/config")
 }
 

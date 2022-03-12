@@ -45,8 +45,8 @@ var _ = Describe("Client", func() {
 			ts, cl = ClientGet("filtering-status.json", "/filtering/status")
 			fs, err := cl.Filtering()
 			Ω(err).ShouldNot(HaveOccurred())
-			Ω(fs.Enabled).Should(BeTrue())
-			Ω(fs.Filters).Should(HaveLen(2))
+			Ω(*fs.Enabled).Should(BeTrue())
+			Ω(*fs.Filters).Should(HaveLen(2))
 		})
 		It("should enable protection", func() {
 			ts, cl = ClientPost("/filtering/config", `{"enabled":true,"interval":123}`)
@@ -65,26 +65,26 @@ var _ = Describe("Client", func() {
 		})
 		It("should add Filters", func() {
 			ts, cl = ClientPost("/filtering/add_url",
-				`{"id":0,"enabled":false,"url":"foo","name":"","rules_count":0,"whitelist":true}`,
-				`{"id":0,"enabled":false,"url":"bar","name":"","rules_count":0,"whitelist":true}`,
+				`{"name":"","url":"foo","whitelist":true}`,
+				`{"name":"","url":"bar","whitelist":true}`,
 			)
-			err := cl.AddFilters(true, types.Filter{URL: "foo"}, types.Filter{URL: "bar"})
+			err := cl.AddFilters(true, model.Filter{Url: "foo"}, model.Filter{Url: "bar"})
 			Ω(err).ShouldNot(HaveOccurred())
 		})
 		It("should update Filters", func() {
 			ts, cl = ClientPost("/filtering/set_url",
-				`{"url":"foo","data":{"id":0,"enabled":false,"url":"foo","name":"","rules_count":0,"whitelist":true},"whitelist":true}`,
-				`{"url":"bar","data":{"id":0,"enabled":false,"url":"bar","name":"","rules_count":0,"whitelist":true},"whitelist":true}`,
+				`{"data":{},"url":"foo","whitelist":true}`,
+				`{"data":{},"url":"bar","whitelist":true}`,
 			)
-			err := cl.UpdateFilters(true, types.Filter{URL: "foo"}, types.Filter{URL: "bar"})
+			err := cl.UpdateFilters(true, model.Filter{Url: "foo"}, model.Filter{Url: "bar"})
 			Ω(err).ShouldNot(HaveOccurred())
 		})
 		It("should delete Filters", func() {
 			ts, cl = ClientPost("/filtering/remove_url",
-				`{"id":0,"enabled":false,"url":"foo","name":"","rules_count":0,"whitelist":true}`,
-				`{"id":0,"enabled":false,"url":"bar","name":"","rules_count":0,"whitelist":true}`,
+				`{"url":"foo","whitelist":true}`,
+				`{"url":"bar","whitelist":true}`,
 			)
-			err := cl.DeleteFilters(true, types.Filter{URL: "foo"}, types.Filter{URL: "bar"})
+			err := cl.DeleteFilters(true, model.Filter{Url: "foo"}, model.Filter{Url: "bar"})
 			Ω(err).ShouldNot(HaveOccurred())
 		})
 	})
@@ -93,7 +93,8 @@ var _ = Describe("Client", func() {
 		It("should set SetCustomRules", func() {
 			ts, cl = ClientPost("/filtering/set_rules", `foo
 bar`)
-			err := cl.SetCustomRules([]string{"foo", "bar"})
+			fs := &model.FilterStatus{UserRules: &[]string{"foo", "bar"}}
+			err := cl.SetCustomRules(fs.UserRulesString())
 			Ω(err).ShouldNot(HaveOccurred())
 		})
 	})

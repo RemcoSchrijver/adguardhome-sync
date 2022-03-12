@@ -2,7 +2,6 @@ package types
 
 import (
 	"fmt"
-	"strings"
 )
 
 const (
@@ -136,77 +135,6 @@ func (re *RewriteEntry) Key() string {
 	return fmt.Sprintf("%s#%s", re.Domain, re.Answer)
 }
 
-// Filters list of Filter
-type Filters []Filter
-
-// Merge merge Filters
-func (f Filters) Merge(other Filters) (Filters, Filters, Filters) {
-	current := make(map[string]Filter)
-
-	var adds Filters
-	var updates Filters
-	var removes Filters
-	for _, f := range f {
-		current[f.URL] = f
-	}
-
-	for i := range other {
-		rr := other[i]
-		if c, ok := current[rr.URL]; ok {
-			if !c.Equals(&rr) {
-				updates = append(updates, rr)
-			}
-			delete(current, rr.URL)
-		} else {
-			adds = append(adds, rr)
-		}
-	}
-
-	for _, rr := range current {
-		removes = append(removes, rr)
-	}
-
-	return adds, updates, removes
-}
-
-// Filter API struct
-type Filter struct {
-	ID         int    `json:"id"`
-	Enabled    bool   `json:"enabled"`
-	URL        string `json:"url"`  // needed for add
-	Name       string `json:"name"` // needed for add
-	RulesCount int    `json:"rules_count"`
-	Whitelist  bool   `json:"whitelist"` // needed for add
-}
-
-// Equals Filter equal check
-func (f *Filter) Equals(o *Filter) bool {
-	return f.Enabled == o.Enabled && f.URL == o.URL && f.Name == o.Name
-}
-
-// FilterUpdate  API struct
-type FilterUpdate struct {
-	URL       string `json:"url"`
-	Data      Filter `json:"data"`
-	Whitelist bool   `json:"whitelist"`
-}
-
-// FilteringStatus API struct
-type FilteringStatus struct {
-	FilteringConfig
-	Filters          Filters   `json:"filters"`
-	WhitelistFilters Filters   `json:"whitelist_filters"`
-	UserRules        UserRules `json:"user_rules"`
-}
-
-// UserRules API struct
-type UserRules []string
-
-// String toString of Users
-func (ur UserRules) String() string {
-	return strings.Join(ur, "\n")
-}
-
 // EnableConfig API struct
 type EnableConfig struct {
 	Enabled bool `json:"enabled"`
@@ -226,48 +154,4 @@ type FilteringConfig struct {
 // RefreshFilter API struct
 type RefreshFilter struct {
 	Whitelist bool `json:"whitelist"`
-}
-
-// Clients API struct
-type Clients struct {
-	Clients     []Client `json:"clients"`
-	AutoClients []struct {
-		IP        string   `json:"ip"`
-		Name      string   `json:"name"`
-		Source    string   `json:"source"`
-		WhoisInfo struct{} `json:"whois_info"`
-	} `json:"auto_clients"`
-	SupportedTags []string `json:"supported_tags"`
-}
-
-// Client API struct
-type Client struct {
-	Ids             []string `json:"ids,omitempty"`
-	Tags            []string `json:"tags,omitempty"`
-	BlockedServices []string `json:"blocked_services,omitempty"`
-	Upstreams       []string `json:"upstreams,omitempty"`
-
-	UseGlobalSettings        bool   `json:"use_global_settings"`
-	UseGlobalBlockedServices bool   `json:"use_global_blocked_services"`
-	Name                     string `json:"name"`
-	FilteringEnabled         bool   `json:"filtering_enabled"`
-	ParentalEnabled          bool   `json:"parental_enabled"`
-	SafesearchEnabled        bool   `json:"safesearch_enabled"`
-	SafebrowsingEnabled      bool   `json:"safebrowsing_enabled"`
-	Disallowed               bool   `json:"disallowed"`
-	DisallowedRule           string `json:"disallowed_rule"`
-}
-
-// ClientUpdate API struct
-type ClientUpdate struct {
-	Name string `json:"name"`
-	Data Client `json:"data"`
-}
-
-// InstallPort AdguardHome install config port
-type InstallPort struct {
-	IP         string `json:"ip"`
-	Port       int    `json:"port"`
-	Status     string `json:"status"`
-	CanAutofix bool   `json:"can_autofix"`
 }

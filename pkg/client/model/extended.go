@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/json"
 	"sort"
+	"strings"
 )
 
 // Equals dhcp config equal check
@@ -172,4 +173,56 @@ func (s BlockedServicesArray) Equals(o BlockedServicesArray) bool {
 	s.Sort()
 	o.Sort()
 	return equals(s, o)
+}
+
+// UserRules API struct
+type UserRules struct {
+	Value string
+	Cnt   int
+}
+
+func (fs *FilterStatus) UserRulesString() UserRules {
+	if fs.UserRules == nil {
+		return UserRules{Value: "", Cnt: 0}
+	}
+	return UserRules{Value: strings.Join(*fs.UserRules, "\n"), Cnt: 0}
+}
+
+// Equals Filter equal check
+func (f *Filter) Equals(o *Filter) bool {
+	return f.Enabled == o.Enabled && f.Url == o.Url && f.Name == o.Name
+}
+
+// MergeFilters merge Filters
+func MergeFilters(from *[]Filter, to *[]Filter) ([]Filter, []Filter, []Filter) {
+	current := make(map[string]Filter)
+
+	var adds []Filter
+	var updates []Filter
+	var removes []Filter
+	if from != nil {
+		for _, f := range *from {
+			current[f.Url] = f
+		}
+	}
+	if to != nil {
+		t := *to
+		for i := range t {
+			rr := t[i]
+			if c, ok := current[rr.Url]; ok {
+				if !c.Equals(&rr) {
+					updates = append(updates, rr)
+				}
+				delete(current, rr.Url)
+			} else {
+				adds = append(adds, rr)
+			}
+		}
+	}
+
+	for _, rr := range current {
+		removes = append(removes, rr)
+	}
+
+	return adds, updates, removes
 }
