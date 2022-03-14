@@ -52,11 +52,12 @@ build-image:
 # go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.9.1
 model:
 	oapi-codegen -package model -generate types https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/v0.107.5/openapi/openapi.yaml > pkg/client/model/model.go
+	oapi-codegen -package model -generate types tmp/model.yaml > pkg/client/model/model.go
 
 
 diff-model:
-	wget -q https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/v0.107.0/openapi/openapi.yaml -O a.yaml
-	wget -q https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/v0.107.5/openapi/openapi.yaml -O b.yaml
+	wget -q https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/v0.107.5/openapi/openapi.yaml -O a.yaml
+	wget -q https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/openapi/openapi.yaml -O b.yaml
 	diff a.yaml b.yaml || rm -f a.yaml b.yaml
 
 diff-replica:

@@ -502,12 +502,12 @@ type Error struct {
 
 // Filter subscription info
 type Filter struct {
-	Enabled     bool      `json:"enabled"`
-	Id          int64     `json:"id"`
-	LastUpdated time.Time `json:"last_updated"`
-	Name        string    `json:"name"`
-	RulesCount  uint32    `json:"rules_count"`
-	Url         string    `json:"url"`
+	Enabled     bool       `json:"enabled"`
+	Id          int64      `json:"id"`
+	LastUpdated *time.Time `json:"last_updated,omitempty"`
+	Name        string     `json:"name"`
+	RulesCount  uint32     `json:"rules_count"`
+	Url         string     `json:"url"`
 }
 
 // Check Host Result
@@ -565,10 +565,11 @@ type FilterSetUrl struct {
 
 // Filtering settings
 type FilterStatus struct {
-	Enabled   *bool     `json:"enabled,omitempty"`
-	Filters   *[]Filter `json:"filters,omitempty"`
-	Interval  *int      `json:"interval,omitempty"`
-	UserRules *[]string `json:"user_rules,omitempty"`
+	Enabled          *bool     `json:"enabled,omitempty"`
+	Filters          *[]Filter `json:"filters,omitempty"`
+	Interval         *int      `json:"interval,omitempty"`
+	UserRules        *[]string `json:"user_rules,omitempty"`
+	WhitelistFilters *[]Filter `json:"whitelist_filters,omitempty"`
 }
 
 // /version.json request data

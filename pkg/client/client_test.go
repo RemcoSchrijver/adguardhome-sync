@@ -41,7 +41,7 @@ var _ = Describe("Client", func() {
 	})
 
 	Context("Filtering", func() {
-		It("should read filtering status", func() {
+		FIt("should read filtering status", func() {
 			ts, cl = ClientGet("filtering-status.json", "/filtering/status")
 			fs, err := cl.Filtering()
 			Ω(err).ShouldNot(HaveOccurred())
