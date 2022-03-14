@@ -6,6 +6,7 @@ package model
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 )
 
 const (
@@ -501,11 +502,12 @@ type Error struct {
 
 // Filter subscription info
 type Filter struct {
-	Enabled    bool   `json:"enabled"`
-	Id         int64  `json:"id"`
-	Name       string `json:"name"`
-	RulesCount uint32 `json:"rules_count"`
-	Url        string `json:"url"`
+	Enabled     bool      `json:"enabled"`
+	Id          int64     `json:"id"`
+	LastUpdated time.Time `json:"last_updated"`
+	Name        string    `json:"name"`
+	RulesCount  uint32    `json:"rules_count"`
+	Url         string    `json:"url"`
 }
 
 // Check Host Result
@@ -555,7 +557,8 @@ type FilterRefreshResponse struct {
 
 // Filtering URL settings
 type FilterSetUrl struct {
-	Data      Filter  `json:"data,omitempty"`
+	// Filter subscription info
+	Data      *Filter `json:"data,omitempty"`
 	Url       *string `json:"url,omitempty"`
 	Whitelist *bool   `json:"whitelist,omitempty"`
 }
@@ -673,7 +676,10 @@ type QueryLogItem struct {
 	// Client information for a query log item.
 	ClientInfo  *QueryLogItemClient `json:"client_info,omitempty"`
 	ClientProto *interface{}        `json:"client_proto,omitempty"`
-	ElapsedMs   *string             `json:"elapsedMs,omitempty"`
+
+	// The IP network defined by an EDNS Client-Subnet option in the request message if any.
+	Ecs       *string `json:"ecs,omitempty"`
+	ElapsedMs *string `json:"elapsedMs,omitempty"`
 
 	// In case if there's a rule applied to this DNS request, this is ID of the filter list that the rule belongs to.
 	// Deprecated: use `rules[*].filter_list_id` instead.
@@ -741,7 +747,8 @@ type QueryLogItemClientWhois struct {
 // /remove_url request data
 type RemoveUrlRequest struct {
 	// Previously added URL containing filtering rules
-	Url *string `json:"url,omitempty"`
+	Url       *string `json:"url,omitempty"`
+	Whitelist *bool   `json:"whitelist,omitempty"`
 }
 
 // Applied rule.
@@ -1406,3 +1413,4 @@ func (a WhoisInfo) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(object)
 }
+
